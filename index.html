@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DocScan Pro">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>DocScan Pro</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  background: #f4efe6;
+  color: #0d0d0d;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media print {
+body > * { display: none !important; }
+#printArea { display: block !important; background: white; }
+#printArea .ppage {
+page-break-after: always;
+display: -webkit-flex;
+display: flex;
+-webkit-align-items: center;
+align-items: center;
+-webkit-justify-content: center;
+justify-content: center;
+padding: 8mm;
+min-height: 100vh;
+background: white;
+}
+#printArea .ppage img {
+max-width: 195mm;
+max-height: 282mm;
+object-fit: contain;
+display: block;
+}
+}
+#printArea { display: none; }
+
+header {
+background: #1a3a5c;
+padding: 16px 18px;
+display: -webkit-flex;
+display: flex;
+-webkit-align-items: center;
+align-items: center;
+gap: 12px;
+position: -webkit-sticky;
+position: sticky;
+top: 0;
+z-index: 100;
+box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+}
+.logo-mark {
+width: 40px;
+height: 40px;
+background: #c8480a;
+border-radius: 10px;
+display: -webkit-flex;
+display: flex;
+-webkit-align-items: center;
+align-items: center;
+-webkit-justify-content: center;
+justify-content: center;
+font-size: 1.3rem;
+flex-shrink: 0;
+}
+.logo-text {
+font-size: 1.3rem;
+font-weight: 800;
+color: #ffffff;
+letter-spacing: -0.02em;
+}
+.logo-text span { color: #f9a87a; }
+.logo-sub {
+font-size: 0.65rem;
+color: rgba(255,255,255,0.5);
+text-transform: uppercase;
+letter-spacing: 0.1em;
+margin-top: 1px;
+}
+.header-badge {
+margin-left: auto;
+background: rgba(255,255,255,0.15);
+border: 1px solid rgba(255,255,255,0.2);
+color: rgba(255,255,255,0.8);
+font-size: 0.7rem;
+font-weight: 600;
+padding: 5px 11px;
+border-radius: 20px;
+white-space: nowrap;
+}
+
+.wrap {
+max-width: 700px;
+margin: 0 auto;
+padding: 22px 16px 90px;
+}
+
+.sec-label {
+font-size: 0.65rem;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 0.12em;
+color: #8a7f72;
+margin-bottom: 8px;
+padding-left: 2px;
+}
+
+.mode-wrap { margin-bottom: 20px; }
+.mode-bar {
+display: -webkit-flex;
+display: flex;
+gap: 7px;
+-webkit-flex-wrap: wrap;
+flex-wrap: wrap;
+background: #1a3a5c;
+border-radius: 10px;
+padding: 11px 13px;
+box-shadow: 0 3px 14px rgba(26,58,92,0.35);
+}
+.mode-btn {
+font-size: 0.82rem;
+font-weight: 500;
+padding: 9px 16px;
+border-radius: 7px;
+border: 1.5px solid rgba(255,255,255,0.25);
+background: transparent;
+color: rgba(255,255,255,0.8);
+cursor: pointer;
+-webkit-tap-highlight-color: transparent;
+letter-spacing: 0.01em;
+}
+.mode-btn.active {
+background: #ffffff;
+color: #1a3a5c;
+border-color: #ffffff;
+font-weight: 700;
+box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.upload-wrap { margin-bottom: 22px; }
+.upload-zone {
+border: 2px dashed #c4bdb3;
+border-radius: 14px;
+padding: 36px 20px 28px;
+text-align: center;
+cursor: pointer;
+background: #faf7f2;
+position: relative;
+}
+.upload-zone input {
+position: absolute;
+top: 0; left: 0; right: 0; bottom: 0;
+opacity: 0;
+width: 100%;
+height: 100%;
+cursor: pointer;
+}
+.upload-icon-wrap {
+width: 56px;
+height: 56px;
+background: #eee8df;
+border-radius: 14px;
+display: -webkit-flex;
+display: flex;
+-webkit-align-items: center;
+align-items: center;
+-webkit-justify-content: center;
+justify-content: center;
+font-size: 1.6rem;
+margin: 0 auto 14px;
+}
+.upload-zone h3 {
+font-size: 1rem;
+font-weight: 700;
+margin-bottom: 5px;
+color: #0d0d0d;
+}
+.upload-zone p {
+font-size: 0.77rem;
+color: #8a7f72;
+line-height: 1.55;
+}
+.upload-chips {
+display: -webkit-flex;
+display: flex;
+gap: 8px;
+-webkit-justify-content: center;
+justify-content: center;
+margin-top: 14px;
+pointer-events: none;
+}
+.chip {
+background: #1a3a5c;
+color: #ffffff;
+font-size: 0.72rem;
+font-weight: 600;
+padding: 5px 13px;
+border-radius: 20px;
+}
+
+.grid-wrap { margin-bottom: 22px; display: none; }
+.pages-grid {
+display: -webkit-flex;
+display: flex;
+-webkit-flex-wrap: wrap;
+flex-wrap: wrap;
+gap: 12px;
+}
+.page-card {
+background: #ffffff;
+border: 1.5px solid #e0dbd3;
+border-radius: 10px;
+overflow: hidden;
+box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+width: calc(50% - 6px);
+}
+.page-card canvas { width: 100%; display: block; }
+.card-footer {
+padding: 7px 9px;
+display: -webkit-flex;
+display: flex;
+-webkit-justify-content: space-between;
+justify-content: space-between;
+-webkit-align-items: center;
+align-items: center;
+border-top: 1px solid #f0ece6;
+background: #faf7f2;
+}
+.page-label {
+font-size: 0.63rem;
+font-weight: 700;
+color: #8a7f72;
+text-transform: uppercase;
+letter-spacing: 0.07em;
+}
+.mode-tag {
+font-size: 0.58rem;
+font-weight: 700;
+padding: 2px 6px;
+border-radius: 4px;
+background: #1a3a5c;
+color: #ffffff;
+text-transform: uppercase;
+}
+.del-btn {
+width: 26px;
+height: 26px;
+border: 1.5px solid #ddd;
+border-radius: 5px;
+background: #ffffff;
+cursor: pointer;
+font-size: 0.8rem;
+display: -webkit-flex;
+display: flex;
+-webkit-align-items: center;
+align-items: center;
+-webkit-justify-content: center;
+justify-content: center;
+color: #8a7f72;
+-webkit-tap-highlight-color: transparent;
+}
+
+.gen-wrap { margin-bottom: 22px; }
+.gen-btn {
+width: 100%;
+font-size: 1rem;
+font-weight: 800;
+padding: 17px 24px;
+background: #c8480a;
+color: #ffffff;
+border: none;
+border-radius: 10px;
+cursor: pointer;
+box-shadow: 0 4px 18px rgba(200,72,10,0.4);
+text-transform: uppercase;
+letter-spacing: 0.06em;
+display: -webkit-flex;
+display: flex;
+-webkit-align-items: center;
+align-items: center;
+-webkit-justify-content: center;
+justify-content: center;
+gap: 10px;
+-webkit-tap-highlight-color: transparent;
+-webkit-appearance: none;
+}
+.gen-btn:disabled {
+background: #c4bdb3;
+box-shadow: none;
+cursor: not-allowed;
+}
+.gen-hint {
+margin-top: 9px;
+font-size: 0.72rem;
+color: #8a7f72;
+text-align: center;
+}
+
+#resultPanel { display: none; margin-bottom: 26px; }
+#resultPanel.show { display: block; }
+.result-card {
+border: 1.5px solid #d0e8da;
+border-radius: 14px;
+overflow: hidden;
+box-shadow: 0 4px 20px rgba(0,0,0,0.09);
+}
+.result-header {
+background: #1d7a4f;
+color: #ffffff;
+padding: 16px 18px;
+display: -webkit-flex;
+display: flex;
+-webkit-align-items: center;
+align-items: center;
+-webkit-justify-content: space-between;
+justify-content: space-between;
+gap: 12px;
+}
+.result-title { font-size: 1rem; font-weight: 800; }
+.result-sub { font-size: 0.75rem; opacity: 0.85; margin-top: 3px; }
+.print-btn {
+font-size: 0.82rem;
+font-weight: 800;
+padding: 11px 16px;
+background: #ffffff;
+color: #1d7a4f;
+border: none;
+border-radius: 7px;
+cursor: pointer;
+text-transform: uppercase;
+letter-spacing: 0.04em;
+box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+white-space: nowrap;
+flex-shrink: 0;
+-webkit-tap-highlight-color: transparent;
+-webkit-appearance: none;
+}
+.result-steps {
+background: #eaf4ee;
+padding: 14px 18px;
+border-bottom: 1px solid #d4e8da;
+}
+.result-steps-title {
+font-size: 0.7rem;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 0.08em;
+color: #1d7a4f;
+margin-bottom: 8px;
+}
+.result-steps ol {
+padding-left: 17px;
+font-size: 0.8rem;
+color: #2d5a3d;
+line-height: 2;
+}
+.result-steps ol li strong { color: #1a3a5c; }
+.preview-strip {
+display: -webkit-flex;
+display: flex;
+gap: 10px;
+padding: 14px 16px;
+overflow-x: auto;
+background: #ffffff;
+-webkit-overflow-scrolling: touch;
+}
+.preview-strip img {
+height: 110px;
+width: auto;
+border-radius: 6px;
+border: 1.5px solid #e0dbd3;
+flex-shrink: 0;
+object-fit: contain;
+background: #fafafa;
+}
+
+footer {
+text-align: center;
+padding: 18px 16px;
+font-size: 0.68rem;
+color: #8a7f72;
+border-top: 1px solid #e8e3da;
+}
+</style>
+
+</head>
+<body>
+
+<div id="printArea"></div>
+
+<header>
+  <div class="logo-mark">📄</div>
+  <div>
+    <div class="logo-text">DocScan<span>Pro</span></div>
+    <div class="logo-sub">Photo to PDF · By Hefnawi</div>
+  </div>
+  <div class="header-badge" id="pageCountBadge">0 pages</div>
+</header>
+
+<div class="wrap">
+
+  <div class="mode-wrap">
+    <div class="sec-label">Scan Enhancement Mode</div>
+    <div class="mode-bar">
+      <button class="mode-btn active" data-mode="auto">&#10022; Auto</button>
+      <button class="mode-btn" data-mode="bw">B&amp;W Doc</button>
+      <button class="mode-btn" data-mode="color">Color</button>
+      <button class="mode-btn" data-mode="id">ID Card</button>
+      <button class="mode-btn" data-mode="original">Original</button>
+    </div>
+  </div>
+
+  <div class="upload-wrap">
+    <div class="sec-label">Add Images</div>
+    <div class="upload-zone">
+      <input type="file" id="fileInput" accept="image/*" multiple>
+      <div class="upload-icon-wrap">📷</div>
+      <h3>Tap to select photos</h3>
+      <p>Front &amp; back of ID · Documents · Receipts<br>Multiple images supported</p>
+      <div class="upload-chips">
+        <span class="chip">Camera Roll</span>
+        <span class="chip">Files</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-wrap" id="gridWrap">
+    <div class="sec-label" id="gridLabel">Pages — 0 added</div>
+    <div class="pages-grid" id="pagesGrid"></div>
+  </div>
+
+  <div id="resultPanel">
+    <div class="result-card">
+      <div class="result-header">
+        <div>
+          <div class="result-title">&#10003; PDF Ready to Save</div>
+          <div class="result-sub" id="resultSub">Pages processed</div>
+        </div>
+        <button class="print-btn" onclick="doPrint()">&#128424; Save as PDF</button>
+      </div>
+      <div class="result-steps">
+        <div class="result-steps-title">How to save on iPhone</div>
+        <ol>
+          <li>Tap <strong>"Save as PDF"</strong> button above</li>
+          <li>Print dialog opens &rarr; <strong>pinch-zoom</strong> the thumbnail</li>
+          <li>PDF opens fullscreen &rarr; tap <strong>Share &#8593;</strong></li>
+          <li>Tap <strong>"Save to Files"</strong> &rarr; <strong>Save &#10003;</strong></li>
+        </ol>
+      </div>
+      <div class="preview-strip" id="previewStrip"></div>
+    </div>
+  </div>
+
+  <div class="gen-wrap">
+    <button class="gen-btn" id="generateBtn" disabled onclick="generatePDF()">
+      <span>&#128196;</span> Generate PDF
+    </button>
+    <p class="gen-hint">&#128274; 100% local &middot; your images never leave your device</p>
+  </div>
+
+</div>
+
+<footer>DocScan Pro &middot; ADIB Personal Finance Team &middot; Hassan Hefnawi</footer>
+
+<script>
+var pages = [];
+var currentMode = 'auto';
+
+var modeBtns = document.querySelectorAll('.mode-btn');
+for (var i = 0; i < modeBtns.length; i++) {
+  modeBtns[i].addEventListener('click', function() {
+    for (var j = 0; j < modeBtns.length; j++) modeBtns[j].classList.remove('active');
+    this.classList.add('active');
+    currentMode = this.getAttribute('data-mode');
+    if (pages.length > 0) reprocessAll();
+  });
+}
+
+document.getElementById('fileInput').addEventListener('change', function(e) {
+  handleFiles(Array.prototype.slice.call(e.target.files));
+  this.value = '';
+});
+
+function handleFiles(files) {
+  var images = files.filter(function(f) { return f.type.indexOf('image/') === 0; });
+  var idx = 0;
+  function next() {
+    if (idx >= images.length) { renderGrid(); return; }
+    addPage(images[idx++], next);
+  }
+  next();
+}
+
+function addPage(file, callback) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      pages.push({
+        id: Date.now() + Math.random(),
+        originalImg: img,
+        canvas: processImage(img, currentMode),
+        mode: currentMode
+      });
+      callback();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function processImage(img, mode) {
+  var canvas = document.createElement('canvas');
+  var MAX = 1800;
+  var w = img.naturalWidth, h = img.naturalHeight;
+  if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+  if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+  canvas.width = w; canvas.height = h;
+  var ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0, w, h);
+  if (mode === 'original') return canvas;
+  var id = ctx.getImageData(0, 0, w, h);
+  var d = id.data;
+  for (var i = 0; i < d.length; i += 4) {
+    var r = d[i], g = d[i+1], b = d[i+2];
+    if (mode === 'bw') {
+      var gray = 0.299*r + 0.587*g + 0.114*b;
+      gray = clamp((gray-128)*1.75+128+22);
+      gray = gray > 148 ? clamp(gray*1.09) : clamp(gray*0.62);
+      d[i] = d[i+1] = d[i+2] = gray;
+    } else if (mode === 'auto') {
+      d[i]   = clamp((r-128)*1.3+128+8);
+      d[i+1] = clamp((g-128)*1.3+128+8);
+      d[i+2] = clamp((b-128)*1.25+128+5);
+    } else if (mode === 'color') {
+      d[i]   = clamp((r-128)*1.22+128+7);
+      d[i+1] = clamp((g-128)*1.18+128+7);
+      d[i+2] = clamp((b-128)*1.15+128+5);
+    } else if (mode === 'id') {
+      d[i]   = clamp((r-128)*1.18+128+3);
+      d[i+1] = clamp((g-128)*1.18+128+3);
+      d[i+2] = clamp((b-128)*1.22+128+7);
+    }
+  }
+  ctx.putImageData(id, 0, 0);
+  return (mode === 'id' || mode === 'color') ? sharpen(canvas) : canvas;
+}
+
+function sharpen(src) {
+  var dst = document.createElement('canvas');
+  dst.width = src.width; dst.height = src.height;
+  var sCtx = src.getContext('2d'), dCtx = dst.getContext('2d');
+  var s = sCtx.getImageData(0, 0, src.width, src.height);
+  var d = dCtx.createImageData(src.width, src.height);
+  var w = src.width, h = src.height;
+  var k = [0,-1,0,-1,5,-1,0,-1,0];
+  for (var y = 1; y < h-1; y++) {
+    for (var x = 1; x < w-1; x++) {
+      var p = (y*w+x)*4;
+      for (var c = 0; c < 3; c++) {
+        var v = 0;
+        for (var ky = -1; ky <= 1; ky++)
+          for (var kx = -1; kx <= 1; kx++)
+            v += s.data[((y+ky)*w+(x+kx))*4+c] * k[(ky+1)*3+(kx+1)];
+        d.data[p+c] = clamp(v);
+      }
+      d.data[p+3] = 255;
+    }
+  }
+  dCtx.putImageData(d, 0, 0);
+  return dst;
+}
+
+function clamp(v) { return Math.max(0, Math.min(255, Math.round(v))); }
+
+function reprocessAll() {
+  pages = pages.map(function(p) {
+    return { id: p.id, originalImg: p.originalImg, canvas: processImage(p.originalImg, currentMode), mode: currentMode };
+  });
+  renderGrid();
+}
+
+function renderGrid() {
+  var grid     = document.getElementById('pagesGrid');
+  var gridWrap = document.getElementById('gridWrap');
+  var genBtn   = document.getElementById('generateBtn');
+  var badge    = document.getElementById('pageCountBadge');
+  var label    = document.getElementById('gridLabel');
+
+  badge.textContent = pages.length + (pages.length !== 1 ? ' pages' : ' page');
+  genBtn.disabled   = pages.length === 0;
+  gridWrap.style.display = pages.length > 0 ? 'block' : 'none';
+  label.textContent = 'Pages — ' + pages.length + ' added';
+
+  grid.innerHTML = '';
+  pages.forEach(function(page, idx) {
+    var card = document.createElement('div');
+    card.className = 'page-card';
+
+    var thumb = document.createElement('canvas');
+    var tw = 280, th = Math.round(tw * page.canvas.height / page.canvas.width);
+    thumb.width = tw; thumb.height = th;
+    thumb.getContext('2d').drawImage(page.canvas, 0, 0, tw, th);
+
+    var footer = document.createElement('div');
+    footer.className = 'card-footer';
+    footer.innerHTML =
+      '<span class="page-label">Page ' + (idx+1) + '</span>' +
+      '<span class="mode-tag">' + page.mode + '</span>' +
+      '<button class="del-btn" onclick="removePage(' + idx + ')">&#10005;</button>';
+
+    card.appendChild(thumb);
+    card.appendChild(footer);
+    grid.appendChild(card);
+  });
+}
+
+function removePage(idx) {
+  pages.splice(idx, 1);
+  renderGrid();
+  if (pages.length === 0) {
+    document.getElementById('resultPanel').classList.remove('show');
+    document.getElementById('printArea').innerHTML = '';
+  }
+}
+
+function generatePDF() {
+  if (!pages.length) return;
+  var printArea = document.getElementById('printArea');
+  var strip     = document.getElementById('previewStrip');
+  printArea.innerHTML = '';
+  strip.innerHTML = '';
+
+  pages.forEach(function(page) {
+    var dataUrl = page.canvas.toDataURL('image/jpeg', 0.93);
+
+    var div = document.createElement('div');
+    div.className = 'ppage';
+    var pImg = new Image();
+    pImg.src = dataUrl;
+    div.appendChild(pImg);
+    printArea.appendChild(div);
+
+    var sImg = new Image();
+    sImg.src = dataUrl;
+    strip.appendChild(sImg);
+  });
+
+  document.getElementById('resultSub').textContent =
+    pages.length + (pages.length > 1 ? ' pages' : ' page') + ' processed \u00b7 tap "Save as PDF"';
+
+  var panel = document.getElementById('resultPanel');
+  panel.classList.add('show');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function doPrint() { window.print(); }
+</script>
+
+</body>
+</html>
